@@ -120,7 +120,7 @@ check: check-tools-js #check-tools-bash check-tools-php
 .PHONY: test
 test: jscs eslint
 	@$(call HELPTEXT,$@)
-	composer validate
+	[ ! -f composer.json ] || composer validate
 
 
 
@@ -205,7 +205,7 @@ check-tools-js:
 .PHONY: jscs
 jscs:
 	@$(call HELPTEXT,$@)
-	[ ! -f .jscsrc ] || $(JSCS) .
+	- [ ! -f .jscsrc ] || $(JSCS) .
 
 
 
@@ -213,7 +213,7 @@ jscs:
 .PHONY: eslint
 eslint:
 	@$(call HELPTEXT,$@)
-	[ ! -f .eslintrc.json ] || $(ESLINT) .
+	- [ ! -f .eslintrc.json ] || $(ESLINT) .
 
 
 
