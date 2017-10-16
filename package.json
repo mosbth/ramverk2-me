@@ -26,7 +26,6 @@
     "jscs": "^3.0.7",
     "jsonlint": "^1.6.2",
     "stylelint": "^8.2.0",
-    "stylelint-config-standard": "^17.0.0",
     "uglify-js": "^3.1.4"
   }
 }
