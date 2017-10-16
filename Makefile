@@ -52,15 +52,16 @@ BEHAT   := $(BIN)/behat
 SHELLCHECK := $(BIN)/shellcheck
 BATS       := $(BIN)/bats
 
-HTMLHINT := $(NODEMODBIN)/htmlhint
-CSSLINT  := $(NODEMODBIN)/csslint
-JSCS     := $(NODEMODBIN)/jscs
-ESLINT   := $(NODEMODBIN)/eslint
-JSONLINT := $(NODEMODBIN)/jsonlint
-JSYAML   := $(NODEMODBIN)/js-yaml
-HTMLMINI := $(NODEMODBIN)/html-minifier
-CLEANCSS := $(NODEMODBIN)/cleancss
-UGLIFYJS := $(NODEMODBIN)/uglifyjs
+HTMLHINT  := $(NODEMODBIN)/htmlhint
+CSSLINT   := $(NODEMODBIN)/csslint
+STYLELINT := $(NODEMODBIN)/stylelint
+JSCS      := $(NODEMODBIN)/jscs
+ESLINT    := $(NODEMODBIN)/eslint
+JSONLINT  := $(NODEMODBIN)/jsonlint
+JSYAML    := $(NODEMODBIN)/js-yaml
+HTMLMINI  := $(NODEMODBIN)/html-minifier
+CLEANCSS  := $(NODEMODBIN)/cleancss
+UGLIFYJS  := $(NODEMODBIN)/uglifyjs
 
 
 
@@ -118,7 +119,7 @@ check: check-tools-js #check-tools-bash check-tools-php
 
 # target: test               - Run all tests.
 .PHONY: test
-test: jscs eslint
+test: htmlhint stylelint jscs eslint #csslint
 	@$(call HELPTEXT,$@)
 	[ ! -f composer.json ] || composer validate
 
@@ -171,7 +172,7 @@ tag-prepare:
 .PHONY: setup-tools-js
 setup-tools-js:
 	@$(call HELPTEXT,$@)
-	npm install --save-dev htmlhint csslint jscs eslint eslint-plugin-react jsonlint js-yaml html-minifier clean-css-cli uglify-js
+	npm install --save-dev htmlhint csslint stylelint stylelint-config-standard jscs eslint eslint-plugin-react jsonlint js-yaml html-minifier clean-css-cli uglify-js
 
 
 
@@ -191,6 +192,7 @@ check-tools-js:
 	@$(call CHECK_VERSION, npm)
 	@$(call CHECK_VERSION, $(HTMLHINT))
 	@$(call CHECK_VERSION, $(CSSLINT))
+	@$(call CHECK_VERSION, $(STYLELINT))
 	@$(call CHECK_VERSION, $(JSCS))
 	@$(call CHECK_VERSION, $(ESLINT))
 	@$(call CHECK_VERSION, $(JSONLINT))
@@ -198,6 +200,38 @@ check-tools-js:
 	@$(call CHECK_VERSION, $(HTMLMINI))
 	@$(call CHECK_VERSION, $(CLEANCSS))
 	@$(call CHECK_VERSION, $(UGLIFYJS), | cut -d ' ' -f 2)
+
+
+
+# target: htmlhint           - HTMLhint linter.
+.PHONY: htmlhint
+htmlhint:
+	@$(call HELPTEXT,$@)
+	- [ ! -f .htmlhintrc ] || $(HTMLHINT) | grep -v "Config loaded:"
+
+
+
+# target: csslint            - CSSlint.
+.PHONY: csslint
+csslint:
+	@$(call HELPTEXT,$@)
+	- [ ! -f .csslintrc ] || $(CSSLINT) .
+
+
+
+# target: stylelint          - Stylelint (alternative csslint).
+.PHONY: stylelint
+stylelint:
+	@$(call HELPTEXT,$@)
+	- [ ! -f .stylelintrc.json ] || $(STYLELINT) **/*.css
+
+
+
+# target: stylelint-fix      - Stylelint fixer.
+.PHONY: stylelint-fix
+stylelint-fix:
+	@$(call HELPTEXT,$@)
+	- [ ! -f .stylelintrc.json ] || $(STYLELINT) **/*.css --fix
 
 
 
